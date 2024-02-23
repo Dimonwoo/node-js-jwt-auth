@@ -1,5 +1,6 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/userController");
+const { startApi } = require("../config/userMessagesConfig");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -8,6 +9,10 @@ module.exports = function (app) {
       "x-access-token, Origin, Content-Type, Accept"
     );
     next();
+  });
+
+  app.get("/", (req, res) => {
+    res.json({ message: startApi });
   });
 
   app.get("/api/all", controller.allAccess);

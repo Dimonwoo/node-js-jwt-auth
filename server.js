@@ -1,14 +1,28 @@
-const http = require('node:http');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+dotenv.config();
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const dbConnect = require("./app/middleware/dbConnect");
+const app = express();
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Start Server\n');
-});
+const PORT = process.env.SERVER_PORT || 8080;
+const CLIENT_HOST = process.env.CLIENT_HOST;
+const CLIENT_PORT = process.env.CLIENT_PORT;
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+var corsOptions = {
+  origin: `{CLIENT_HOST}:{CLIENT_PORT}`,
+};
+
+app.use(cors(corsOptions));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+dbConnect();
+
+require("./app/routes/authRoutes")(app);
+require("./app/routes/userRoutes")(app);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
 });
